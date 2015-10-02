@@ -45,6 +45,8 @@ restore_file atlassian-jira/WEB-INF/classes/jira-application.properties "${BINBA
 
 restore_file bin/setenv.sh "${BINBACKUPDIR}/jira" "${JIRA_BASE}"
 
+restore_file bin/user.sh "${BINBACKUPDIR}/jira" "${JIRA_BASE}"
+
 restore_file conf/server.xml "${BINBACKUPDIR}/jira" "${JIRA_BASE}"
 
 info "Setting permissions"
