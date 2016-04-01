@@ -11,6 +11,11 @@ export JIRA_PATH=
 # Currently only psql supported
 export JIRA_DATABASE=
 
+# Jira type. jira-core jira-software and jira-servicedesk
 export JIRA_TYPE=jira-software
 
+# Jira user
 export JIRA_USER=jira
+
+# Uncomment if desired backup directory is not $JIRA_PATH/backup
+# export BACKUPDIR=
