@@ -1,6 +1,16 @@
 #!/bin/bash
 
-# TODO: Download new jira
+#
+# Update jira to recent version.
+#
+
+if [ -z "$1" ]
+then
+	echo "Usage $0 path/to/config.sh"
+	exit 1
+fi
+
+export CONFIG_FILE="$1"
 
 set -e
 set -x
@@ -13,9 +23,31 @@ export THIS=$(cd `dirname "${BASH_SOURCE[0]}"` && pwd)
 # Include helpers
 . ${THIS}/../helpers.sh
 
-export JIRA_TGZ="$1"
+JIRA_TGZ="$(mktemp -u --suffix=.tar.gz)"
 
-test -z $JIRA_TGZ && fail "Usage: $0 new-jira.tar.gz"
+# Download newest
+
+JIRA_NEW_VERSION="$(latest_version jira-core)"
+ 
+set +e
+
+vercomp "$JIRA_VERSION" '6.4' '<'
+
+set -e
+
+info "Downloading new jira"
+if [ $? -gt 2 ]
+then
+    # 6.4 -> 7 update requires more attention
+    JIRA_DOWNLOAD_URL="$(latest_version_url $JIRA_TYPE)"
+else
+    # Usually only jira-core update is required
+    JIRA_DOWNLOAD_URL="$(latest_version_url jira-core)"
+fi
+
+JIRA_NEW="${JIRA_BASE}/jira-${JIRA_NEW_VERSION}"
+
+wget -O "$JIRA_TGZ" "$JIRA_DOWNLOAD_URL"
 
 # Do initial backup
 
@@ -25,38 +57,45 @@ servicemanager jira stop
 
 # wait for jira to stop
 
+sleep 60
+
 # Backup jira again
 
 backup_jira
 
 #Unzip new jira
 
-rm -r "$JIRA_BASE"
+mkdir "$JIRA_NEW"
 
-mkdir "$JIRA_BASE"
+info "Unzipping new jira"
+tar --strip-components=1 -xf "$JIRA_TGZ" -C "$JIRA_NEW"
 
-tar --strip-components=1 -xf "$JIRA_TGZ" -C "$JIRA_BASE"
+# Remove tempdir
+rm "$JIRA_TGZ"
 
-# Restore some files from backup
+# Restore some files from previous version
 
 info "Restoring some config files"
 
-restore_file atlassian-jira/WEB-INF/classes/jira-application.properties "${BINBACKUPDIR}/jira" "${JIRA_BASE}"
+restore_file atlassian-jira/WEB-INF/classes/jira-application.properties "${JIRA_PREVIOUS}" "${JIRA_NEW}"
 
-restore_file bin/setenv.sh "${BINBACKUPDIR}/jira" "${JIRA_BASE}"
+restore_file bin/setenv.sh "${JIRA_PREVIOUS}" "${JIRA_NEW}"
 
-restore_file bin/user.sh "${BINBACKUPDIR}/jira" "${JIRA_BASE}"
+restore_file bin/user.sh "${JIRA_PREVIOUS}" "${JIRA_NEW}"
 
-restore_file conf/server.xml "${BINBACKUPDIR}/jira" "${JIRA_BASE}"
+restore_file conf/server.xml "${JIRA_PREVIOUS}" "${JIRA_NEW}"
 
 info "Setting permissions"
 
-chown -R jira ${JIRA_BASE}/temp
-chown -R jira ${JIRA_BASE}/logs
-chown -R jira ${JIRA_BASE}/work
-
+chown -R "$JIRA_USER" "${JIRA_NEW}/temp"
+chown -R "$JIRA_USER" "${JIRA_NEW}/logs"
+chown -R "$JIRA_USER" "${JIRA_NEW}/work"
 
 # TODO: version specific stuff here!!
+
+info "Updating current symlink"
+rm ${JIRA_CURRENT}
+ln -s ${JIRA_NEW} ${JIRA_CURRENT}
 
 info "Starting jira"
 
