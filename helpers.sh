@@ -33,6 +33,8 @@ function restore_file() {
     new="${new_base}/${path}"
     test -f "$old" || fail "Old file '$old' must exist"
     test -f "$new" && diff "$old" "$new" && true
+    # Backup distributed version and copy old configuration
+    mv "$new" "${new}.dist"
     cp "$old" "$new"
     true
 }

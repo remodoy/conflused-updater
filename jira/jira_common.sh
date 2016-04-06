@@ -17,15 +17,23 @@ test -z "$JIRA_PATH" && fail "JIRA_PATH not set"
 export JIRA_BASE="$JIRA_PATH"
 test -z "$JIRA_USER" && fail "JIRA_USER not set"
 test -z "$JIRA_TYPE" && export JIRA_TYPE="jira-core"
-
+test -z "$JIRA_SERVICE_NAME" && export JIRA_SERVICE_NAME="jira"
 test -d "$JIRA_BASE" || fail "${JIRA_BASE} is not a directory"
+test -z "$DEBUG" && export DEBUG=0
+
+if [ "$DEBUG" = "1" ]
+then
+    export DEBUG="$DEBUG"
+else
+    export DEBUG="0"
+fi
 
 export JIRA_CURRENT="${JIRA_BASE}/current"
 
 test -h ${JIRA_CURRENT} || fail "${JIRA_CURRENT} is not link"
 
 # Previous jira directory
-readlink "${JIRA_CURRENT}" || fail "${JIRA_CURRENT} is a broken link"
+readlink "${JIRA_CURRENT}" > /dev/null 2>&1 || fail "${JIRA_CURRENT} is a broken link"
 export JIRA_PREVIOUS="$(readlink -f ${JIRA_CURRENT})"
 
 # Get jira version
@@ -82,10 +90,12 @@ function backup_files() {
 function backup_jira() {
     test -f "${JIRA_PREVIOUS}/atlassian-jira/WEB-INF/classes/jira-application.properties" || fail "${JIRA_PREVIOUS}/atlassian-jira/WEB-INF/classes/jira-application.properties not such file"
 
+    test -d "${BACKUPDIR}" || ( mkdir "${BACKUPDIR}"; chmod 700 "${BACKUPDIR}" )
+
     backup_database "jira-${JIRA_VERSION}.sql"
 
-    test -d "${BACKUPDIR}" || ( mkdir "${BACKUPDIR}"; chmod 700 "${BACKUPDIR}" )
-    test -d "${BINBACKUPDIR}" || ( mkdir "${BINBACKUPDIR}"; chmod 700 "${BINBACKUPDIR}" )
+    
+    #test -d "${BINBACKUPDIR}" || ( mkdir "${BINBACKUPDIR}"; chmod 700 "${BINBACKUPDIR}" )
     test -d "${APPLICATIONDATABACKUPDIR}" || ( mkdir "${APPLICATIONDATABACKUPDIR}"; chmod 700 "${APPLICATIONDATABACKUPDIR}" )
 
     # Skip for now

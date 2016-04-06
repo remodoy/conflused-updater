@@ -8,8 +8,6 @@
 #
 # Path to jira installation base directory
 export JIRA_PATH=
-# Currently only psql supported
-export JIRA_DATABASE=
 
 # Jira type. jira-core jira-software and jira-servicedesk
 export JIRA_TYPE=jira-software
@@ -17,5 +15,11 @@ export JIRA_TYPE=jira-software
 # Jira user
 export JIRA_USER=jira
 
+# Jira service name in systemd or init script, default: jira
+# export JIRA_SERVICE_NAME=jira
+
 # Uncomment if desired backup directory is not $JIRA_PATH/backup
 # export BACKUPDIR=
+
+# Set to 1 for debug (set -x)
+# export DEBUG=0
