@@ -1,0 +1,23 @@
+# Configuration for Confluence updater
+
+# Installation directory layout
+#
+# CONFLUENCE_BASE/confluence-5.2
+# CONFLUENCE_BASE/confluence-5.3
+# CONFLUENCE_BASE/current -> $CONFLUENCE_BASE/confluence-5.3
+#
+# Path to Confluence installation base directory, MANDATORY
+export CONFLUENCE_BASE=
+
+# Confluence user
+export CONFLUENCE_USER=confluence
+
+# Confluence service name in systemd or init script, default: confluence
+# Use value disable to disable service restarting
+# export CONFLUENCE_SERVICE_NAME=confluence
+
+# Uncomment if desired backup directory is not $CONFLUENCE_BASE/backup
+# export BACKUPDIR=
+
+# Set to 1 for debug (set -x)
+# export DEBUG=0
