@@ -24,6 +24,18 @@ Confluence
 * Run confluence/update_confluence.sh confluence.config as root or normal user
 * Done
 
+Directory structure
+===================
+
+  APPLICATION_BASE
+  APPLICATION_BASE/application-x.y
+  APPLICATION_BASE/application-x.z
+  APPLICATION_BASE/current -> APPLICATION_BASE/application-x.z
+  APPLICATION_BASE/application.config
+
+Current symlink points to a newest installed version of application and should
+be used in init scripts etc.
+
 License
 =======
 
