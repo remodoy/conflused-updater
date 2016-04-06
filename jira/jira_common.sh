@@ -6,13 +6,6 @@ THIS=$(cd `dirname "${BASH_SOURCE[0]}"` && pwd)
 
 . $CONFIG_FILE
 
-export JIRA_BASE
-export JIRA_USER
-export JIRA_TYPE
-#export ATLASSIAN_BASE=/opt/jira
-
-#export JIRA_BASE="$(realpath ${ATLASSIAN_BASE}/jira)/"
-
 test -z "$JIRA_PATH" && fail "JIRA_PATH not set"
 export JIRA_BASE="$JIRA_PATH"
 test -z "$JIRA_USER" && fail "JIRA_USER not set"
@@ -20,6 +13,10 @@ test -z "$JIRA_TYPE" && export JIRA_TYPE="jira-core"
 test -z "$JIRA_SERVICE_NAME" && export JIRA_SERVICE_NAME="jira"
 test -d "$JIRA_BASE" || fail "${JIRA_BASE} is not a directory"
 test -z "$DEBUG" && export DEBUG=0
+
+export JIRA_BASE
+export JIRA_USER
+export JIRA_TYPE
 
 if [ "$DEBUG" = "1" ]
 then
@@ -42,14 +39,17 @@ test -z "$JIRA_BANNER" && fail "Cannot get JIRA version"
 
 export JIRA_VERSION=$(cat ${JIRA_BANNER} |sed -n -e 's/.*Version.*: \([0-9\.]*\)\r/\1/p')
 
+test -z "$JIRA_VERSION" && fail "Failed to fetch JIRA version from ${JIRA_BANNER}"
+
 export BACKUPDIR="${BACKUPDIR:-$(realpath ${JIRA_BASE}/backup)}"
 
 export BINBACKUPDIR="$(realpath ${BACKUPDIR}/binary)"
 
 export APPLICATIONDATABACKUPDIR="$(realpath ${BACKUPDIR}/application-data)"
 
-export APPLICATION_DATA_DIR="$(cat ${JIRA_PREVIOUS}/atlassian-jira/WEB-INF/classes/jira-application.properties |awk -F '= ' '$1 ~ /jira.home.*/  { print $2 }')"
+export APPLICATION_DATA_DIR="$(get_init_value ${JIRA_PREVIOUS}/atlassian-jira/WEB-INF/classes/jira-application.properties jira.home)"
 
+# Get database variables, bash </3 XML
 export JIRA_DATABASE_USERNAME="$(cat ${APPLICATION_DATA_DIR}/dbconfig.xml | sed -ne 's/.*<username>\(.*\)<\/username>.*/\1/p')"
 export JIRA_DATABASE_PASSWORD="$(cat ${APPLICATION_DATA_DIR}/dbconfig.xml | sed -ne 's/.*<password>\(.*\)<\/password>.*/\1/p')"
 export JIRA_DATABASE_URI="$(cat ${APPLICATION_DATA_DIR}/dbconfig.xml | sed -ne 's/.*<url>\(.*\)<\/url>.*/\1/p')"
@@ -57,6 +57,11 @@ export JIRA_DATABASE_SERVER="$(echo $JIRA_DATABASE_URI |sed  -ne 's/.*:\/\/\(.*\
 export JIRA_DATABASE_PORT="$(echo $JIRA_DATABASE_URI |sed  -ne 's/.*:\/\/.*:\(.*\)\/.*/\1/p')"
 export JIRA_DATABASE_NAME="$(echo $JIRA_DATABASE_URI |sed  -ne 's/.*:\/\/.*:.*\/\(.*\)$/\1/p')"
 
+test -z "$JIRA_DATABASE_USERNAME" && fail "Failed to get database username for JIRA from ${APPLICATION_DATA_DIR}/dbconfig.xml"
+test -z "$JIRA_DATABASE_PASSWORD" && fail "Failed to get database password for JIRA from ${APPLICATION_DATA_DIR}/dbconfig.xml"
+test -z "$JIRA_DATABASE_SERVER" && fail "Failed to get database server address for JIRA from ${APPLICATION_DATA_DIR}/dbconfig.xml"
+test -z "$JIRA_DATABASE_PORT" && fail "Failed to get database server port for JIRA from ${APPLICATION_DATA_DIR}/dbconfig.xml"
+test -z "$JIRA_DATABASE_NAME" && fail "Failed to get database name for JIRA from ${APPLICATION_DATA_DIR}/dbconfig.xml"
 
 # Backup
 function backup_database() {
@@ -74,18 +79,6 @@ function backup_database() {
     chmod 600 "${BACKUP_FILE}"
 }
 
-function backup_files() {
-    sourcedir=$1
-    destdir=$2
-    test -z "$sourcedir" && fail "Backup source dir cannot be empty"
-    test -z "$destdir" && fail "Backup destination dir cannot be empty"
-    test -d "$sourcedir" || fail "Backup source dir does not exist"
-    sourcedir="${sourcedir%/}"
-    destdir="${destdir%/}"
-    info "Backupping $sourcedir to ${destdir}/"
-    rsync -aHAX --delete "$sourcedir" "${destdir}/"
-
-}
 
 function backup_jira() {
     test -f "${JIRA_PREVIOUS}/atlassian-jira/WEB-INF/classes/jira-application.properties" || fail "${JIRA_PREVIOUS}/atlassian-jira/WEB-INF/classes/jira-application.properties not such file"

@@ -8,6 +8,18 @@ function fail() {
     exit 1
 }
 
+function test_variable() {
+    NAME="$1"
+    test -z "${!NAME}" && fail "Variable $NAME not set" || true
+}
+
+function get_init_value() {
+    FILE="$1"
+    VALUE="$2"
+    test -f "$FILE" || fail "Not such file or directory '$FILE'"
+    cat "$FILE" |awk -v search="^${VALUE}.*" -F '=' '{ if (match ($1, search)) { gsub(/ /, "", $0); gsub(/\r/, "", $0); print $2 } }'
+}
+
 function servicemanager() {
     service="$1"
     action="$2"
@@ -21,6 +33,19 @@ function servicemanager() {
     test -f /etc/init.d/$service && $SUDO /etc/init.d/$service "$action" && return 0
     # service
     which service > /dev/null 2>&1 && $SUDO service "$service" "$action" && return 0
+}
+
+function backup_files() {
+    sourcedir=$1
+    destdir=$2
+    test -z "$sourcedir" && fail "Backup source dir cannot be empty"
+    test -z "$destdir" && fail "Backup destination dir cannot be empty"
+    test -d "$sourcedir" || fail "Backup source dir does not exist"
+    sourcedir="${sourcedir%/}"
+    destdir="${destdir%/}"
+    info "Backupping $sourcedir to ${destdir}/"
+    rsync -aHAX --exclude backups/ --delete "$sourcedir" "${destdir}/"
+
 }
 
 function restore_file() {

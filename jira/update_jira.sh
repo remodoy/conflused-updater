@@ -30,6 +30,12 @@ export THIS=$(cd `dirname "${BASH_SOURCE[0]}"` && pwd)
 
 JIRA_TGZ="$(mktemp -u --suffix=.tar.gz)"
 
+function post_cleanup() {
+    rm $JIRA_TGZ || true
+}
+
+trap post_cleanup SIGINT SIGTERM
+
 # Download newest
 
 JIRA_NEW_VERSION="$(latest_version jira-core)"
@@ -71,12 +77,14 @@ wget -O "$JIRA_TGZ" "$JIRA_DOWNLOAD_URL"
 
 backup_jira
 
-# Stop JIRA
-servicemanager "${JIRA_SERVICE_NAME}" stop
+if [ "${JIRA_SERVICE_NAME}" != "disable" ]
+then
+    # Stop JIRA
+    servicemanager "${JIRA_SERVICE_NAME}" stop
 
-# wait for JIRA to stop
-
-sleep 60
+    # wait for JIRA to stop
+    sleep 60
+fi
 
 # Backup JIRA again
 
@@ -116,8 +124,11 @@ info "Updating current symlink"
 rm ${JIRA_CURRENT}
 ln -s ${JIRA_NEW} ${JIRA_CURRENT}
 
-info "Starting jira"
+info "JIRA is now updated!"
 
-servicemanager "${JIRA_SERVICE_NAME}" start
-
-echo "JIRA is now updated! Be patient, JIRA is starting up"
+if [ "${JIRA_SERVICE_NAME}" != "disable" ]
+then
+    info "Starting jira"
+    servicemanager "${JIRA_SERVICE_NAME}" start
+    info "Be patient, JIRA is starting up"
+fi
