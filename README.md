@@ -27,11 +27,11 @@ Confluence
 Directory structure
 ===================
 
-  APPLICATION_BASE
-  APPLICATION_BASE/application-x.y
-  APPLICATION_BASE/application-x.z
-  APPLICATION_BASE/current -> APPLICATION_BASE/application-x.z
-  APPLICATION_BASE/application.config
+    APPLICATION_BASE
+    APPLICATION_BASE/application-x.y
+    APPLICATION_BASE/application-x.z
+    APPLICATION_BASE/current -> APPLICATION_BASE/application-x.z
+    APPLICATION_BASE/application.config
 
 Current symlink points to a newest installed version of application and should
 be used in init scripts etc.
