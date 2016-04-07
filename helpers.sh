@@ -44,7 +44,7 @@ function backup_files() {
     sourcedir="${sourcedir%/}"
     destdir="${destdir%/}"
     info "Backupping $sourcedir to ${destdir}/"
-    rsync -aHAX --exclude backups/ --delete "$sourcedir" "${destdir}/"
+    rsync -aHAX --exclude backups/ --exclude export/ --delete "$sourcedir" "${destdir}/"
 
 }
 

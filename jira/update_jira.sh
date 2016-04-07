@@ -14,12 +14,6 @@ export CONFIG_FILE="$1"
 
 set -e
 
-if [ "$DEBUG" = "1" ]
-then
-    # set -x when debug
-    set -x
-fi
-
 export THIS=$(cd `dirname "${BASH_SOURCE[0]}"` && pwd)
 
 # Include commons
@@ -27,6 +21,14 @@ export THIS=$(cd `dirname "${BASH_SOURCE[0]}"` && pwd)
 
 # Include helpers
 . ${THIS}/../helpers.sh
+
+
+if [ "$DEBUG" = "1" ]
+then
+    # set -x when debug
+    set -x
+fi
+
 
 JIRA_TGZ="$(mktemp -u --suffix=.tar.gz)"
 

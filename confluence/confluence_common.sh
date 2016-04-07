@@ -8,6 +8,8 @@ THIS=$(cd `dirname "${BASH_SOURCE[0]}"` && pwd)
 
 # Handle user defined parameters
 
+which realpath > /dev/null || fail "realpath not installed"
+
 test_variable CONFLUENCE_BASE
 test_variable CONFLUENCE_USER
 
@@ -52,9 +54,14 @@ test ! -z "$APPLICATION_DATA_DIR" || fail "Failed to find application-data direc
 export CONFLUENCE_DATABASE_USERNAME="$(cat ${APPLICATION_DATA_DIR}/confluence.cfg.xml | sed -ne 's/.*<property name="hibernate.connection.username">\(.*\)<\/property>.*/\1/p')"
 export CONFLUENCE_DATABASE_PASSWORD="$(cat ${APPLICATION_DATA_DIR}/confluence.cfg.xml | sed -ne 's/.*<property name="hibernate.connection.password">\(.*\)<\/property>.*/\1/p')"
 export CONFLUENCE_DATABASE_URI="$(cat ${APPLICATION_DATA_DIR}/confluence.cfg.xml | sed -ne 's/.*<property name="hibernate.connection.url">\(.*\)<\/property>.*/\1/p')"
+export CONFLUENCE_DATABASE_TYPE="$(echo $CONFLUENCE_DATABASE_URI |sed  -ne 's/^jdbc:\([a-z][a-z]*\):\/\/.*/\1/p')"
 export CONFLUENCE_DATABASE_SERVER="$(echo $CONFLUENCE_DATABASE_URI |sed  -ne 's/.*:\/\/\(.*\):.*/\1/p')"
 export CONFLUENCE_DATABASE_PORT="$(echo $CONFLUENCE_DATABASE_URI |sed  -ne 's/.*:\/\/.*:\(.*\)\/.*/\1/p')"
 export CONFLUENCE_DATABASE_NAME="$(echo $CONFLUENCE_DATABASE_URI |sed  -ne 's/.*:\/\/.*:.*\/\(.*\)$/\1/p')"
+
+# Test database is postgresql database
+test "$CONFLUENCE_DATABASE_TYPE" = "postgresql" || fail "Only postgresql database currently supported"
+
 
 test ! -z "$CONFLUENCE_DATABASE_USERNAME" || fail "Failed to get database username for Confluence from ${APPLICATION_DATA_DIR}/confluence.cfg.xml"
 test ! -z "$CONFLUENCE_DATABASE_PASSWORD" || fail "Failed to get database password for Confluence from ${APPLICATION_DATA_DIR}/confluence.cfg.xml"

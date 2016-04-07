@@ -6,17 +6,7 @@ THIS=$(cd `dirname "${BASH_SOURCE[0]}"` && pwd)
 
 . $CONFIG_FILE
 
-test -z "$JIRA_PATH" && fail "JIRA_PATH not set"
-export JIRA_BASE="$JIRA_PATH"
-test -z "$JIRA_USER" && fail "JIRA_USER not set"
-test -z "$JIRA_TYPE" && export JIRA_TYPE="jira-core"
-test -z "$JIRA_SERVICE_NAME" && export JIRA_SERVICE_NAME="jira"
-test -d "$JIRA_BASE" || fail "${JIRA_BASE} is not a directory"
 test -z "$DEBUG" && export DEBUG=0
-
-export JIRA_BASE
-export JIRA_USER
-export JIRA_TYPE
 
 if [ "$DEBUG" = "1" ]
 then
@@ -25,9 +15,31 @@ else
     export DEBUG="0"
 fi
 
+if [ "$DEBUG" = "1" ]
+then
+    # set -x when debug
+    set -x
+fi
+
+which realpath > /dev/null || fail "realpath not installed"
+
+test -z "$JIRA_PATH" && fail "JIRA_PATH not set"
+test -e "$JIRA_PATH" || fail "Directory $JIRA_PATH does not exist"
+export JIRA_BASE="$(realpath $JIRA_PATH)"
+test -z "$JIRA_USER" && fail "JIRA_USER not set"
+test -z "$JIRA_TYPE" && export JIRA_TYPE="jira-core"
+test -z "$JIRA_SERVICE_NAME" && export JIRA_SERVICE_NAME="jira"
+test -d "$JIRA_BASE" || fail "${JIRA_BASE} is not a directory"
+
+
+export JIRA_BASE
+export JIRA_USER
+export JIRA_TYPE
+
+
 export JIRA_CURRENT="${JIRA_BASE}/current"
 
-test -h ${JIRA_CURRENT} || fail "${JIRA_CURRENT} is not link"
+test -h ${JIRA_CURRENT} || fail "${JIRA_CURRENT} is not a symbolic link"
 
 # Previous jira directory
 readlink "${JIRA_CURRENT}" > /dev/null 2>&1 || fail "${JIRA_CURRENT} is a broken link"
@@ -41,11 +53,11 @@ export JIRA_VERSION=$(cat ${JIRA_BANNER} |sed -n -e 's/.*Version.*: \([0-9\.]*\)
 
 test -z "$JIRA_VERSION" && fail "Failed to fetch JIRA version from ${JIRA_BANNER}"
 
-export BACKUPDIR="${BACKUPDIR:-$(realpath ${JIRA_BASE}/backup)}"
+export BACKUPDIR="${BACKUPDIR:-${JIRA_BASE}/backup}"
 
-export BINBACKUPDIR="$(realpath ${BACKUPDIR}/binary)"
+export BINBACKUPDIR="${BACKUPDIR}/binary"
 
-export APPLICATIONDATABACKUPDIR="$(realpath ${BACKUPDIR}/application-data)"
+export APPLICATIONDATABACKUPDIR="${BACKUPDIR}/application-data"
 
 export APPLICATION_DATA_DIR="$(get_init_value ${JIRA_PREVIOUS}/atlassian-jira/WEB-INF/classes/jira-application.properties jira.home)"
 
@@ -53,15 +65,25 @@ export APPLICATION_DATA_DIR="$(get_init_value ${JIRA_PREVIOUS}/atlassian-jira/WE
 export JIRA_DATABASE_USERNAME="$(cat ${APPLICATION_DATA_DIR}/dbconfig.xml | sed -ne 's/.*<username>\(.*\)<\/username>.*/\1/p')"
 export JIRA_DATABASE_PASSWORD="$(cat ${APPLICATION_DATA_DIR}/dbconfig.xml | sed -ne 's/.*<password>\(.*\)<\/password>.*/\1/p')"
 export JIRA_DATABASE_URI="$(cat ${APPLICATION_DATA_DIR}/dbconfig.xml | sed -ne 's/.*<url>\(.*\)<\/url>.*/\1/p')"
+export JIRA_DATABASE_TYPE="$(echo $JIRA_DATABASE_URI |sed  -ne 's/^jdbc:\([a-z][a-z]*\):\/\/.*/\1/p')"
 export JIRA_DATABASE_SERVER="$(echo $JIRA_DATABASE_URI |sed  -ne 's/.*:\/\/\(.*\):.*/\1/p')"
 export JIRA_DATABASE_PORT="$(echo $JIRA_DATABASE_URI |sed  -ne 's/.*:\/\/.*:\(.*\)\/.*/\1/p')"
 export JIRA_DATABASE_NAME="$(echo $JIRA_DATABASE_URI |sed  -ne 's/.*:\/\/.*:.*\/\(.*\)$/\1/p')"
+
+# Test database is postgresql database
+test "$JIRA_DATABASE_TYPE" = "postgresql" || fail "Only postgresql database currently supported"
 
 test -z "$JIRA_DATABASE_USERNAME" && fail "Failed to get database username for JIRA from ${APPLICATION_DATA_DIR}/dbconfig.xml"
 test -z "$JIRA_DATABASE_PASSWORD" && fail "Failed to get database password for JIRA from ${APPLICATION_DATA_DIR}/dbconfig.xml"
 test -z "$JIRA_DATABASE_SERVER" && fail "Failed to get database server address for JIRA from ${APPLICATION_DATA_DIR}/dbconfig.xml"
 test -z "$JIRA_DATABASE_PORT" && fail "Failed to get database server port for JIRA from ${APPLICATION_DATA_DIR}/dbconfig.xml"
 test -z "$JIRA_DATABASE_NAME" && fail "Failed to get database name for JIRA from ${APPLICATION_DATA_DIR}/dbconfig.xml"
+
+if [ "$DEBUG" = "1" ]
+then
+    echo "Environment:"
+    env
+fi
 
 # Backup
 function backup_database() {
