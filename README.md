@@ -1,11 +1,14 @@
-Atlassian-updater
+Conflused-updater
 =================
 
-Shell scripts to backup and update Atlassian products. Currently JIRA and
-Confluence supported.
+Shell scripts to backup and update Atlassian JIRA and Confluence instances.
+Currently only instances running on Linux and using PostgreSQL database are
+supported.
 
 JIRA
 ====
+
+JIRA, JIRA Software and JIRA Servicedesk installations supported.
 
 * Copy jira/config.sh.sample to jira.config
 * Edit jira.config to match your setup
@@ -27,14 +30,27 @@ Confluence
 Directory structure
 ===================
 
+Script requires that every application is installed in separate subdirectory,
+later called APPLICATION_BASE. APPLICATION_BASE directory contains application
+installation directories, a "current" symlink to newest version directory and
+a configuration file for this updater tool.
+
+
     APPLICATION_BASE
     APPLICATION_BASE/application-x.y
     APPLICATION_BASE/application-x.z
     APPLICATION_BASE/current -> APPLICATION_BASE/application-x.z
     APPLICATION_BASE/application.config
 
-Current symlink points to a newest installed version of application and should
-be used in init scripts etc.
+Replace "application" in "application.config" with application name. For example
+jira.config.
+
+Restore
+=======
+
+In case something goes wrong, restore backups from A BACKUP_DIR. The BACKUP_DIR
+defaults to a APPLICATION_BASE/backup directory. Application-data directory
+contains application-data files and binary directory contains sql dumps.
 
 License
 =======
