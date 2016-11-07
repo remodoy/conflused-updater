@@ -43,7 +43,7 @@ CONFLUENCE_NEW_VERSION="$(latest_version confluence)"
 
 set +e
 
-vercomp "$CONFLUENCE_VERSION" "$CONFLUENCE_NEW_VERSION" '<='
+vercomp "$CONFLUENCE_VERSION" "$CONFLUENCE_NEW_VERSION"
 RES=$?
 set -e
 
@@ -109,6 +109,23 @@ chown -R "$CONFLUENCE_USER" "${CONFLUENCE_NEW}/logs"
 chown -R "$CONFLUENCE_USER" "${CONFLUENCE_NEW}/work"
 
 # TODO: version specific stuff here!!
+
+set +e
+
+vercomp "$CONFLUENCE_VERSION" "6.0.0"
+RES1=$?
+vercomp "$CONFLUENCE_NEW_VERSION" "6.0.0"
+RES2=$?
+
+if [ $RES1 -eq 2 ] && [ $RES2 -lt 2 ]
+then
+	info "Remember to add /synchrony config to your web server configuration"
+	info "https://confluence.atlassian.com/confkb/how-to-use-nginx-to-proxy-requests-for-confluence-313459790.html"
+	info "https://confluence.atlassian.com/doc/using-apache-with-mod_proxy-173669.html"
+fi
+set -e
+
+# Update rest of things
 
 info "Updating current symlink"
 rm ${CONFLUENCE_CURRENT}

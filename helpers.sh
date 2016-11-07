@@ -86,6 +86,9 @@ function latest_version() {
 
 # http://stackoverflow.com/questions/4023830/bash-how-compare-two-strings-in-version-format
 vercomp () {
+    # Returns 0 if version numbers are equal
+    # Returns 1 if version number 1 is greater than version number 2
+    # Returns 2 if version number 1 is smaller than version number 2
     if [[ $1 == $2 ]]
     then
         return 0
