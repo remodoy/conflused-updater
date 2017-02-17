@@ -17,7 +17,7 @@ function get_init_value() {
     FILE="$1"
     VALUE="$2"
     test -f "$FILE" || fail "Not such file or directory '$FILE'"
-    cat "$FILE" |awk -v search="^${VALUE}.*" -F '=' '{ if (match ($1, search)) { gsub(/ /, "", $0); gsub(/\r/, "", $0); print $2 } }'
+    cat "$FILE" |awk -v search="^${VALUE}.*" -F '=' '{ if (match ($1, search)) { gsub(/ /, "", $0); gsub(/\r/, "", $0); print $2 } }' | tail -n1
 }
 
 function servicemanager() {
