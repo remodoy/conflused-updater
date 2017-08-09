@@ -1,0 +1,23 @@
+# Configuration for CROWD updater
+
+# Installation directory layout
+#
+# CROWD_PATH/crowd-2.12
+# CROWD_PATH/crowd-2.12
+# CROWD_PATH/current -> $CROWD_PATH/crowd-2.12
+#
+# Path to CROWD installation base directory, MANDATORY
+export CROWD_PATH=
+
+# CROWD user
+export CROWD_USER=crowd
+
+# Crowd service name in systemd or init script, default: crowd
+# Use value disable to disable service restarting
+# export CROWD_SERVICE_NAME=crowd
+
+# Uncomment if desired backup directory is not $CROWD_PATH/backup
+# export BACKUPDIR=
+
+# Set to 1 for debug (set -x)
+# export DEBUG=0
