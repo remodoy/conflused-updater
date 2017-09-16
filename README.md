@@ -27,6 +27,30 @@ Confluence
 * Run confluence/update_confluence.sh confluence.config as root or normal user
 * Done
 
+
+Bitbucket
+=========
+
+*Minimum supported version is 5.x+*
+
+Usage:
+* Copy bitbucket/config.sh.sample to bitbucket.config
+* Edit bitbucket.config to match your setup
+* Create current symlink to BITBUCKET_BASE if not already set
+    * Fix init scripts / unit files also
+* Run bitbucket/update_bitbucket.sh bitbucket.config as root or normal user
+* Done
+
+Migration guide from 4.x+:
+* Migrate your [server.xml](https://confluence.atlassian.com/bitbucketserver/bitbucket-server-upgrade-guide-776640551.html)
+* Create set-jre-home.sh to your old installation bin-folder
+    * See version 5.x+ files for a sample in <extract_dir>/bin/
+* Create set-bitbucket-home.sh to your old installation bin-folder
+    * See version 5.x+ files for a sample in <extract_dir>/bin/
+* Create set-bitbucket-user.sh to your old installation bin-folder
+    * See version 5.x+ files for a sample in <extract_dir>/bin/
+
+
 Directory structure
 ===================
 
