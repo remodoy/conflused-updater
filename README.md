@@ -51,6 +51,19 @@ Migration guide from 4.x+:
     * See version 5.x+ files for a sample in <extract_dir>/bin/
 
 
+Bamboo
+======
+
+*The updater looks for BAMBOO_HOME from `atlassian-bamboo/WEB-INF/classes/bamboo-init.properties`.
+Migrate your HOME var there if it isn't already*
+
+* Copy bamboo/config.sh.sample to bamboo.config
+* Edit bamboo.config to match your setup
+* Create current symlink to BAMBOO_PATH if not already set
+    * Fix init scripts / unit files also
+* Run bamboo/update_bamboo.sh bamboo.config as root or normal user
+* Done
+
 Directory structure
 ===================
 
