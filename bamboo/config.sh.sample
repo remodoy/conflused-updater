@@ -1,0 +1,23 @@
+# Configuration for Bamboo updater
+
+# Installation directory layout
+#
+# BAMBOO_PATH/bamboo-1.2
+# BAMBOO_PATH/bamboo-1.3
+# BAMBOO_PATH/current -> $BAMBOO_PATH/bamboo-1.3
+#
+# Path to Bamboo installation base directory, MANDATORY
+export BAMBOO_PATH=
+
+# Bamboo user
+export BAMBOO_USER=bamboo
+
+# Bamboo service name in systemd or init script, default: bamboo
+# Use value disable to disable service restarting
+# export BAMBOO_SERVICE_NAME=bamboo
+
+# Uncomment if desired backup directory is not $BAMBOO_PATH/backup
+# export BACKUPDIR=
+
+# Set to 1 for debug (set -x)
+# export DEBUG=0
