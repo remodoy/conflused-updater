@@ -102,6 +102,14 @@ restore_file bin/user.sh "${CONFLUENCE_PREVIOUS}" "${CONFLUENCE_NEW}"
 
 restore_file conf/server.xml "${CONFLUENCE_PREVIOUS}" "${CONFLUENCE_NEW}"
 
+# SSO configs
+if [ -f "${JIRA_PREVIOUS}/atlassian-jira/WEB-INF/classes/crowd.properties" ]
+then
+    restore_file confluence/WEB-INF/classes/crowd.properties "${CONFLUENCE_PREVIOUS}" "${CONFLUENCE_NEW}"
+    restore_file confluence/WEB-INF/classes/seraph-config.xml "${CONFLUENCE_PREVIOUS}" "${CONFLUENCE_NEW}"
+fi
+
+
 info "Setting permissions..."
 
 chown -R "$CONFLUENCE_USER" "${CONFLUENCE_NEW}/temp"

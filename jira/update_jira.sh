@@ -106,6 +106,13 @@ restore_file bin/user.sh "${JIRA_PREVIOUS}" "${JIRA_NEW}"
 
 restore_file conf/server.xml "${JIRA_PREVIOUS}" "${JIRA_NEW}"
 
+
+if [ -f "${JIRA_PREVIOUS}/atlassian-jira/WEB-INF/classes/crowd.properties" ]
+then
+    restore_file atlassian-jira/WEB-INF/classes/crowd.properties "${JIRA_PREVIOUS}" "${JIRA_NEW}"
+    restore_file atlassian-jira/WEB-INF/classes/seraph-config.xml "${JIRA_PREVIOUS}" "${JIRA_NEW}"
+fi
+
 info "Setting permissions..."
 
 chown -R "$JIRA_USER" "${JIRA_NEW}/temp"
