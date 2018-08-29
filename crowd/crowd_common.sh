@@ -59,7 +59,9 @@ export APPLICATIONDATABACKUPDIR="${BACKUPDIR}/application-data"
 
 export APPLICATION_DATA_DIR="$(get_init_value ${CROWD_PREVIOUS}/crowd-webapp/WEB-INF/classes/crowd-init.properties crowd.home)"
 
-export CROWD_DATABASE_CONFIG_FILE=" ${APPLICATION_DATA_DIR}/crowd.cfg.xml"
+export CROWD_DATABASE_CONFIG_FILE="${APPLICATION_DATA_DIR}/shared/crowd.cfg.xml"
+
+test -f "${CROWD_DATABASE_CONFIG_FILE}" || export CROWD_DATABASE_CONFIG_FILE="${APPLICATION_DATA_DIR}/crowd.cfg.xml"
 
 # Get database variables, bash </3 XML
 export CROWD_DATABASE_USERNAME="$(cat ${CROWD_DATABASE_CONFIG_FILE} | sed -ne 's/.*<property name="hibernate.connection.username">\(.*\)<\/property>.*/\1/p')"
