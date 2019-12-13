@@ -40,7 +40,7 @@ set +e
 
 vercomp "$CROWD_VERSION" "$CROWD_NEW_VERSION" '<='
 RES=$?
-set -e
+set -eo pipefail
 
 if [ $RES -lt 2 ]
 then

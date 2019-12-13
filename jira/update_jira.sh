@@ -38,7 +38,7 @@ set +e
 
 vercomp "$JIRA_VERSION" '6.4' '<'
 RES=$?
-set -e
+set -eo pipefail
 
 if [ $RES -gt 1 ]
 then
