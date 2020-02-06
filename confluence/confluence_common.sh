@@ -82,7 +82,7 @@ function backup_database() {
     local PGPORT="$CONFLUENCE_DATABASE_PORT"
     local PGHOST="$CONFLUENCE_DATABASE_SERVER"
     local PGUSER="$CONFLUENCE_DATABASE_USERNAME"
-    pg_dump $CONFLUENCE_DATABASE_NAME |gzip -c > "${BACKUP_FILE}"
+    pg_dump $CONFLUENCE_DATABASE_NAME |gzip -c > "${BACKUP_FILE}" || fail "Failed to backup database"
     chmod 600 "${BACKUP_FILE}"
 }
 
