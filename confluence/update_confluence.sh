@@ -29,7 +29,7 @@ export THIS=$(cd `dirname "${BASH_SOURCE[0]}"` && pwd)
 # Include helpers
 . ${THIS}/../helpers.sh
 
-CONFLUENCE_TGZ="$(mktemp -u --suffix=.tar.gz)"
+test -z "$CONFLUENCE_TGZ" && CONFLUENCE_TGZ="$(mktemp -u --suffix=.tar.gz)"
 
 function post_cleanup() {
     rm $CONFLUENCE_TGZ || true
@@ -39,7 +39,7 @@ trap post_cleanup SIGINT SIGTERM
 
 # Get newest version
 
-CONFLUENCE_NEW_VERSION="$(latest_version confluence)"
+test -z "$CONFLUENCE_NEW_VERSION" && CONFLUENCE_NEW_VERSION="$(latest_version confluence)"
 
 set +e
 
