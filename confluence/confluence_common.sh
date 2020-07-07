@@ -1,3 +1,4 @@
+#@IgnoreInspection BashAddShebang
 THIS=$(cd `dirname "${BASH_SOURCE[0]}"` && pwd)
 
 # Include helpers
@@ -57,7 +58,7 @@ export CONFLUENCE_DATABASE_URI="$(cat ${APPLICATION_DATA_DIR}/confluence.cfg.xml
 export CONFLUENCE_DATABASE_TYPE="$(echo $CONFLUENCE_DATABASE_URI |sed  -ne 's/^jdbc:\([a-z][a-z]*\):\/\/.*/\1/p')"
 export CONFLUENCE_DATABASE_SERVER="$(echo $CONFLUENCE_DATABASE_URI |sed  -ne 's/.*:\/\/\(.*\):.*/\1/p')"
 export CONFLUENCE_DATABASE_PORT="$(echo $CONFLUENCE_DATABASE_URI |sed  -ne 's/.*:\/\/.*:\(.*\)\/.*/\1/p')"
-export CONFLUENCE_DATABASE_NAME="$(echo $CONFLUENCE_DATABASE_URI |sed  -ne 's/.*:\/\/.*:.*\/\(.*\)$/\1/p')"
+export CONFLUENCE_DATABASE_NAME="$(echo $CONFLUENCE_DATABASE_URI |sed  -ne 's/.*:\/\/.*:.*\/\([a-zA-Z0-9_-]*\)\(\?.*\)*$/\1/p')"
 
 # Test database is postgresql database
 test "$CONFLUENCE_DATABASE_TYPE" = "postgresql" || fail "Only postgresql database currently supported"
@@ -78,10 +79,10 @@ function backup_database() {
     local BACKUP_FILE="${BACKUPDIR}/${filename}.gz"
     touch "${BACKUP_FILE}"
     chmod 600 "${BACKUP_FILE}"
-    local PGPASSWORD="$CONFLUENCE_DATABASE_PASSWORD"
-    local PGPORT="$CONFLUENCE_DATABASE_PORT"
-    local PGHOST="$CONFLUENCE_DATABASE_SERVER"
-    local PGUSER="$CONFLUENCE_DATABASE_USERNAME"
+    PGPASSWORD="$CONFLUENCE_DATABASE_PASSWORD" \
+    PGPORT="$CONFLUENCE_DATABASE_PORT" \
+    PGHOST="$CONFLUENCE_DATABASE_SERVER" \
+    PGUSER="$CONFLUENCE_DATABASE_USERNAME" \
     pg_dump $CONFLUENCE_DATABASE_NAME |gzip -c > "${BACKUP_FILE}" || fail "Failed to backup database"
     chmod 600 "${BACKUP_FILE}"
 }
