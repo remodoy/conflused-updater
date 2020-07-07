@@ -1,4 +1,5 @@
 #!/bin/bash
+set -ueo pipefail
 
 #
 # Update Confluence to most recent version.
@@ -55,7 +56,7 @@ fi
 
 CONFLUENCE_NEW="${CONFLUENCE_BASE}/confluence-${CONFLUENCE_NEW_VERSION}"
 
-CONFLUENCE_DOWNLOAD_URL="$(latest_version_url confluence)"
+CONFLUENCE_DOWNLOAD_URL="$(get_version_url confluence "${CONFLUENCE_NEW_VERSION}")"
 
 info "Downloading new Confluence"
 
@@ -103,7 +104,7 @@ restore_file bin/user.sh "${CONFLUENCE_PREVIOUS}" "${CONFLUENCE_NEW}"
 restore_file conf/server.xml "${CONFLUENCE_PREVIOUS}" "${CONFLUENCE_NEW}"
 
 # SSO configs
-if [ -f "${JIRA_PREVIOUS}/atlassian-jira/WEB-INF/classes/crowd.properties" ]
+if [ -f "${CONFLUENCE_PREVIOUS}/confluence/WEB-INF/classes/crowd.properties" ]
 then
     restore_file confluence/WEB-INF/classes/crowd.properties "${CONFLUENCE_PREVIOUS}" "${CONFLUENCE_NEW}"
     restore_file confluence/WEB-INF/classes/seraph-config.xml "${CONFLUENCE_PREVIOUS}" "${CONFLUENCE_NEW}"

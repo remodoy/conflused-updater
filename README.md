@@ -13,7 +13,7 @@ JIRA, JIRA Software and JIRA Servicedesk installations supported.
 * Copy jira/config.sh.sample to jira.config
 * Edit jira.config to match your setup
 * Create current symlink to JIRA_PATH if not already set
-   * Fix init scripts also
+   * Fix directory path(s) to init scripts also
 * Run jira/update_jira.sh jira.config as root or normal user
 * Done
 
@@ -27,6 +27,10 @@ Confluence
 * Run confluence/update_confluence.sh confluence.config as root or normal user
 * Done
 
+You can use environment variable CONFLUENCE_NEW_VERSION to define version to
+update to. CONFLUENCE_NEW_VERSION value must be existing version number,
+for example "6.13.10".
+
 
 Bitbucket
 =========
@@ -37,7 +41,7 @@ Usage:
 * Copy bitbucket/config.sh.sample to bitbucket.config
 * Edit bitbucket.config to match your setup
 * Create current symlink to BITBUCKET_BASE if not already set
-    * Fix init scripts / unit files also
+    * Fix directory path(s) to init scripts / unit files also
 * Run bitbucket/update_bitbucket.sh bitbucket.config as root or normal user
 * Done
 
@@ -60,7 +64,7 @@ Migrate your HOME var there if it isn't already*
 * Copy bamboo/config.sh.sample to bamboo.config
 * Edit bamboo.config to match your setup
 * Create current symlink to BAMBOO_PATH if not already set
-    * Fix init scripts / unit files also
+    * Fix directory path(s) to init scripts / unit files also
 * Run bamboo/update_bamboo.sh bamboo.config as root or normal user
 * Done
 
@@ -94,7 +98,7 @@ License
 
 MIT license
 
-Copyright (c) 2016 Antti Jaakkola Remod Oy
+Copyright (c) 2020 Remod Oy
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in

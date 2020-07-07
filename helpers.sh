@@ -67,7 +67,7 @@ function restore_file() {
 function latest_version_url() {
 	if [ -z "$1" ]
 	then
-		echo "Error: Invalid number of options in lastest_version()" 1>&2
+		echo "Error: Invalid number of options in latest_version_url()" 1>&2
 		exit 1
 	fi
 	software="$(echo $1 | tr '[:upper:]' '[:lower:]')"
@@ -82,6 +82,17 @@ function latest_version() {
 	fi
 	software="$(echo $1 | tr '[:upper:]' '[:lower:]')"
 	wget -qO-  "https://my.atlassian.com/download/feeds/current/${software}.json" |sed -e 's/.*"version":"\([0-9][0-9\.]*\)",".*/\1/' | head
+}
+
+function get_version_url() {
+    if [ -z "$1" ] || [ -z "$2" ]
+    then
+        echo "Error: Invalid number of options in get_version_url()" 1>&2
+        exit 1
+    fi
+    software="$(echo $1 | tr '[:upper:]' '[:lower:]')"
+    version="$(echo $2 | sed 's#\.#\\.#g')"
+    wget -qO- 'https://my.atlassian.com/download/feeds/archived/${software}.json' |sed -e 's/.*"zipUrl":"\(https:\/\/[a-zA-Z/0-9\.-]*'${version}'\.tar.gz\)".*/\1/'
 }
 
 # http://stackoverflow.com/questions/4023830/bash-how-compare-two-strings-in-version-format
