@@ -59,7 +59,10 @@ function restore_file() {
     test -f "$old" || fail "Old file '$old' must exist"
     test -f "$new" && diff "$old" "$new" && true
     # Backup distributed version and copy old configuration
-    mv "$new" "${new}.dist"
+    if [ -f "$new" ]
+    then
+        mv "$new" "${new}.dist"
+    fi
     cp "$old" "$new"
     true
 }
