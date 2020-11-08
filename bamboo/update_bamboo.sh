@@ -39,7 +39,7 @@ set +e
 
 vercomp "$BAMBOO_VERSION" "$BAMBOO_NEW_VERSION" '<='
 RES=$?
-set -e
+set -eo pipefail
 
 if [ $RES -lt 2 ]
 then

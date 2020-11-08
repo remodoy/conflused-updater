@@ -41,7 +41,7 @@ set +e
 
 vercomp "$BITBUCKET_VERSION" "$BITBUCKET_NEW_VERSION" '<='
 RES=$?
-set -e
+set -eo pipefail
 
 if [ $RES -lt 2 ]
 then
