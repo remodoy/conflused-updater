@@ -74,7 +74,7 @@ function latest_version_url() {
 		exit 1
 	fi
 	software="$(echo $1 | tr '[:upper:]' '[:lower:]')"
-	wget -qO-  "https://my.atlassian.com/download/feeds/current/${software}.json" |sed -e 's/.*\(https:\/\/.*\.tar.gz\).*/\1/'
+	wget -qO- "https://my.atlassian.com/download/feeds/current/${software}.json" |sed -e 's/downloads(//' -e 's/)$//' |python -m json.tool |awk -F '"' '/tar.gz/ {print $4}' |sort -V |tail -n 1
 }
 
 function latest_version() {
@@ -84,7 +84,7 @@ function latest_version() {
 		exit 1
 	fi
 	software="$(echo $1 | tr '[:upper:]' '[:lower:]')"
-	wget -qO-  "https://my.atlassian.com/download/feeds/current/${software}.json" |sed -e 's/.*"version":"\([0-9][0-9\.]*\)",".*/\1/' | head
+	wget -qO- "https://my.atlassian.com/download/feeds/current/${software}.json" |sed -e 's/downloads(//' -e 's/)$//' |python -m json.tool |awk -F '"' '/version/ {print $4}' |sort -V |tail -n 1
 }
 
 function get_version_url() {
