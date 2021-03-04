@@ -32,21 +32,29 @@ trap post_cleanup SIGINT SIGTERM
 
 # Download newest
 
-JIRA_NEW_VERSION="$(latest_version jira-core)"
- 
+if [ -z "$JIRA_NEW_VERSION" ]
+then
+     JIRA_NEW_VERSION="$(latest_version jira-core)"
+fi
+
 set +e
 
-vercomp "$JIRA_VERSION" '6.4' '<'
-RES=$?
-set -e
-
-if [ $RES -gt 1 ]
+if [ -z "${JIRA_DOWNLOAD_URL}" ]
 then
-    # 6.4 -> 7 update requires more attention
-    JIRA_DOWNLOAD_URL="$(latest_version_url $JIRA_TYPE)"
-else
-    # Usually only jira-core update is required
-    JIRA_DOWNLOAD_URL="$(latest_version_url jira-core)"
+
+    vercomp "$JIRA_VERSION" '6.4' '<'
+    RES=$?
+    set -e
+
+    if [ $RES -gt 1 ]
+    then
+        # 6.4 -> 7 update requires more attention
+        JIRA_DOWNLOAD_URL="$(get_version_url $JIRA_TYPE "${JIRA_NEW_VERSION}")"
+
+    else
+        # Usually only jira-core update is required
+        JIRA_DOWNLOAD_URL="$(get_version_url jira-core "${JIRA_NEW_VERSION}")"
+    fi
 fi
 
 set +e

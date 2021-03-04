@@ -89,6 +89,14 @@ def install_java(tarpath, installpath):
     if os.path.islink(os.path.join(installpath, 'current')):
         os.remove(os.path.join(installpath, 'current'))
     os.symlink(os.path.join(installpath, java_name), os.path.join(installpath, 'current'))
+    bin_dir = os.path.join(installpath, "bin")
+    java_bin = os.path.join(installpath, java_name, "bin/java")
+    java_bin_sym = os.path.join(installpath, 'bin/java')
+    if not os.path.isdir(bin_dir):
+        os.mkdir(bin_dir, 0o755)
+    if  os.path.islink(bin_dir):
+        os.remove(java_bin_sym)
+    os.symlink(java_bin, java_bin_sym)
 
 
 if __name__ == '__main__':

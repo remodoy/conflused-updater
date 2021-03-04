@@ -97,7 +97,7 @@ function backup_database() {
     export PGPORT="$JIRA_DATABASE_PORT"
     export PGHOST="$JIRA_DATABASE_SERVER"
     export PGUSER="$JIRA_DATABASE_USERNAME"
-    pg_dump $JIRA_DATABASE_NAME |gzip -c > "${BACKUP_FILE}"
+    pg_dump $JIRA_DATABASE_NAME |gzip -c > "${BACKUP_FILE}" || fail "Failed to backup database"
     chmod 600 "${BACKUP_FILE}"
 }
 
