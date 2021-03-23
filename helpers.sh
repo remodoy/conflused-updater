@@ -95,7 +95,7 @@ function get_version_url() {
     fi
     software="$(echo $1 | tr '[:upper:]' '[:lower:]')"
     version="$(echo $2 | sed 's#\.#\\.#g')"
-    wget -qO- 'https://my.atlassian.com/download/feeds/archived/${software}.json' |sed -e 's/.*"zipUrl":"\(https:\/\/[a-zA-Z/0-9\.-]*'${version}'\.tar.gz\)".*/\1/'
+    wget -qO- "https://my.atlassian.com/download/feeds/archived/${software}.json" |sed -e 's/.*"zipUrl":"\(https:\/\/[a-zA-Z/0-9\.-]*'${version}'\.tar.gz\)".*/\1/'
 }
 
 # http://stackoverflow.com/questions/4023830/bash-how-compare-two-strings-in-version-format
